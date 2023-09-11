@@ -1,0 +1,69 @@
+{% extends "network/layout.html" %}
+{% block body %}
+    <body>
+        <h1>User Profile</h1>
+        {% if user.is_authenticated %}
+            <a class="nav-link" href="#"><strong>Hello, {{ user.username }}</strong></a>
+    {% endif %}
+    <div>
+        <img src="{{ user_information.profile.profile_picture.url }}" width="100", alt="Picture"> <br><br>
+        {{ user_information }} <br><br>
+        {{ user_information.profile.twitter_name }} <br><br>
+        {{ user_information.profile.email }} <br><br>
+        {{ user_information.profile.location }} <br><br>
+        Joined: {{ user_information.profile.date_created }}<br><br>
+        Following: {{ number_of_following }}<br><br>
+        Followers: {{ number_of_followers }}
+    </div>
+    <div>
+    <center>
+        <br><br>{% for post in posts %}
+        {{ post.post_text }} <br> {{ post.date_posted }}<br><br>
+        {% endfor %}
+    </center> 
+    </div>
+    </body>
+{% endblock %}
+
+{% extends "network/layout.html" %}
+{% block body %}
+    <body>
+        <h1>User Profile</h1>
+        {% if user.is_authenticated %}
+            <a class="nav-link" href="#"><strong>Hello, {{ user.username }}</strong></a>
+    {% endif %}
+    <div>
+        <img src="{{ user_information.profile.profile_picture.url }}" width="100", alt="Picture"> <br><br>
+        {{ user_information }} <br><br>
+        {{ user_information.profile.twitter_name }} <br><br>
+        {{ user_information.profile.email }} <br><br>
+        {{ user_information.profile.location }} <br><br>
+        Joined: {{ user_information.profile.date_created }}<br><br>
+        {% for following_user in following_users %}
+        <a href="{& url 'following' %}">
+        {{ following_user }}:</a>
+        {% endfor %}
+        {{ number_of_following }}<br><br>
+
+        
+        Followers: {{ number_of_followers }}
+    </div>
+    <div>
+    <center>
+        <br><br>{% for post in posts %}
+        {{ post.post_text }} <br> {{ post.date_posted }}<br><br>
+        {% endfor %}
+    </center> 
+    </div>
+    </body>
+{% endblock %}
+
+
+
+def following(request, user_id):
+    current_user = User.objects.get(pk=user_id)
+    list_of_followings = Follow.objects.all()
+
+    return render(request, "network/following.html", {
+        "list_of_followings": list_of_followings
+    })

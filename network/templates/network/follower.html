@@ -1,0 +1,12 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+
+<div>
+    <h1>Followers</h1>
+    {% for list_of_follower in list_of_followers %}
+    {{ list_of_follower.users_following }}<br>
+    {% endfor %}
+</div>
+
+{% endblock %}  

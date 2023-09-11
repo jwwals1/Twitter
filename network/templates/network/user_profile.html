@@ -1,0 +1,29 @@
+{% extends "network/layout.html" %}
+{% block body %}
+    <body>
+        <h1>User Profile</h1>
+        {% if user.is_authenticated %}
+            <a class="nav-link" href="#"><strong>Hello, {{ user.username }}</strong></a>
+    {% endif %}
+    <div>
+        <img src="{{ user_information.profile.profile_picture.url }}" width="100", alt="Picture"> <br><br>
+        {{ user_information }} <br><br>
+        {{ user_information.profile.twitter_name }} <br><br>
+        {{ user_information.profile.email }} <br><br>
+        {{ user_information.profile.location }} <br><br>
+        Joined: {{ user_information.profile.date_created }}<br><br>
+
+        <a href="{% url 'following'  user_id=user.id %}">Following:</a>
+        {{ number_of_following.count }}<br><br>
+        <a href="{% url 'follower' user_id=user.id %}">Followers</a>
+        {{ number_of_followers.count }}
+    </div>
+    <div>
+    <center>
+        <br><br>{% for post in posts %}
+        {{ post.post_text }} <br> {{ post.date_posted }}<br><br>
+        {% endfor %}
+    </center> 
+    </div>
+    </body>
+{% endblock %}

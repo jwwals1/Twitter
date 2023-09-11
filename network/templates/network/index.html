@@ -1,0 +1,25 @@
+{% extends "network/layout.html" %}
+
+{% block body %}
+<center>
+<br>
+    <h1>Make New Post</h1>
+    <form action="{% url 'new_post' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ post_form }}
+        <input type="submit" value="Post">
+    </form>
+    <div>
+        {% for post in posts %}
+        <br>
+        {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br>
+        <form action="{% url 'index' %}" method="post">
+            {% csrf_token %}
+            <button type="submit", name="post_id", value="{{ post.id }}">Like</button>
+            <a href="{% url 'likes' post_id=post.id %}" method="get">{{ post.likes.all.count}}</a><br><br>
+        </form>
+        
+        {% endfor %}
+    </div>
+</center>
+{% endblock %}
