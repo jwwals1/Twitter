@@ -6,15 +6,14 @@ class User(AbstractUser):
     pass
 
 
-class NewPost(models.Model):
+class Post(models.Model):
     user_post = models.ForeignKey(
         User, on_delete=models.CASCADE, blank=True, null=True)
     post_text = models.CharField(max_length=240)
     date_posted = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(User, related_name='twitter_post')
 
     def __str__(self):
-        return f"{self.post_text} by {self.user_post} liked by {self.likes.all()}"
+        return f"{self.post_text} by {self.user_post}"
 
 
 class Profile(models.Model):
@@ -41,3 +40,12 @@ class Follow(models.Model):
 
     def __str__(self):
         return f"{self.users_following} is following {self.user_followers}"
+
+
+class Like(models.Model):
+    post = models.ForeignKey(
+        Post, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} liked {self.post}"

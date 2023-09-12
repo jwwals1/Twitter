@@ -4,17 +4,19 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from .forms import NewPostForm
-from .models import User, NewPost, Profile, Follow
+from .models import User, Post, Profile, Follow, Like
 
 
 def index(request):
-    posts = NewPost.objects.order_by("-date_posted").all()
+    posts = Post.objects.all().order_by("-date_posted")
+    post = Post.objects.all()
     form = NewPostForm(request.POST)
+    alllikes = Like.objects.all()
 
     if request.POST == 'post':
         if form.is_valid():
             post_text = form.cleaned_data['post_text']
-            new_post = NewPost(
+            new_post = Post(
                 user_post=User.objects.get(pk=request.user.id),
                 post_text=post_text
             )
@@ -24,6 +26,7 @@ def index(request):
     return render(request, "network/index.html", {
         "post_form": NewPostForm(),
         "posts": posts,
+        "alllikes": alllikes
     })
 
 
@@ -83,20 +86,27 @@ def new_post(request):
     if request.method == 'POST':
         post_text = request.POST['post_text']
         user_post = User.objects.get(pk=request.user.id)
-        post = NewPost(post_text=post_text, user_post=user_post)
+        post = Post(post_text=post_text, user_post=user_post)
         post.save()
         return HttpResponseRedirect(reverse(index))
 
 
 def user_profile(request, user_id):
     user_information = User.objects.get(pk=user_id)
-    posts = NewPost.objects.filter(
+    posts = Post.objects.filter(
         user_post=request.user.id).order_by("-date_posted").all()
 
     number_of_following = Follow.objects.filter(
         users_following=user_information)
     number_of_followers = Follow.objects.filter(
         user_followers=user_information)
+
+    if request.method == "POST":
+        post = Post.objects.get(pk=post_id)
+        user = User.objects.get(pk=request.user.id)
+        newlike = Like(user=user, post=post)
+        newlike.save()
+        return HttpResponseRedirect(reverse(user_profile))
 
     return render(request, 'network/user_profile.html', {
         "user_information": user_information,
@@ -122,12 +132,9 @@ def follower(request, user_id):
     })
 
 
-def likes_per_post(request, post_id):
-    post_informations = NewPost.objects.filter(id=post_id)
-    return render(request, "network/likes.html", {
-        "post_informations": post_informations
-    })
-
-
-def like(request):
-    return render(request, "network/index.html")
+def add_like(request, post_id):
+    post = Post.objects.get(id=post_id)
+    user = User.objects.get(pk=request.user.id)
+    newlike = Like(user=user, post=post)
+    newlike.save()
+    return HttpResponseRedirect(reverse(index))

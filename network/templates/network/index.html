@@ -11,14 +11,11 @@
     </form>
     <div>
         {% for post in posts %}
-        <br>
-        {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br>
-        <form action="{% url 'index' %}" method="post">
-            {% csrf_token %}
-            <button type="submit", name="post_id", value="{{ post.id }}">Like</button>
-            <a href="{% url 'likes' post_id=post.id %}" method="get">{{ post.likes.all.count}}</a><br><br>
+        {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br> 
+        <form action="{% url 'add_like' post_id=post.id %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="submit" value="Like">{{ alllikes.count }}<br><br>
         </form>
-        
         {% endfor %}
     </div>
 </center>
