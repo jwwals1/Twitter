@@ -100,12 +100,12 @@ def user_profile(request, user_id):
     number_of_followers = Follow.objects.filter(
         user_followers=user_information)
 
-    if request.method == "POST":
-        post = Post.objects.get(pk=post_id)
-        user = User.objects.get(pk=request.user.id)
-        newlike = Like(user=user, post=post)
-        newlike.save()
-        return HttpResponseRedirect(reverse(user_profile))
+    # if request.method == "POST":
+    #     post = Post.objects.get(pk=post_id)
+    #     user = User.objects.get(pk=request.user.id)
+    #     newlike = Like(user=user, post=post)
+    #     newlike.save()
+    #     return HttpResponseRedirect(reverse(user_profile))
 
     return render(request, 'network/user_profile.html', {
         "user_information": user_information,
@@ -134,18 +134,36 @@ def follower(request, user_id):
 def add_like(request, post_id):
     post = Post.objects.get(id=post_id)
     user = User.objects.get(pk=request.user.id)
-    newlike = Like(user=user, post=post)
-    post.number_of_likes = post.number_of_likes + 1
-    newlike.save()
-    post.save()
-    return HttpResponseRedirect(reverse(index))
+    like_value = Like.objects.filter(post_id=post_id, user=user).first()
+    username = request.user
+
+    if like_value == None:
+        newlike = Like(user=username, post=post)
+        post.number_of_likes = post.number_of_likes + 1
+        newlike.save()
+        post.save()
+        return HttpResponseRedirect(reverse(index))
+    else:
+        like_value.delete()
+        post.number_of_likes = post.number_of_likes - 1
+        post.save()
+        return HttpResponseRedirect(reverse(index))
 
 
 def add_like_user_page(request, post_id):
     post = Post.objects.get(id=post_id)
     user = User.objects.get(pk=request.user.id)
-    newlike = Like(user=user, post=post)
-    post.number_of_likes = post.number_of_likes + 1
-    newlike.save()
-    post.save()
-    return HttpResponseRedirect(reverse(user_profile))
+    like_value = Like.objects.filter(post_id=post_id, user=user).first()
+    username = request.user
+
+    if like_value == None:
+        newlike = Like(user=username, post=post)
+        post.number_of_likes = post.number_of_likes + 1
+        newlike.save()
+        post.save()
+        return HttpResponseRedirect(reverse(user_profile))
+    else:
+        like_value.delete()
+        post.number_of_likes = post.number_of_likes - 1
+        post.save()
+        return HttpResponseRedirect(reverse(user_profile))
