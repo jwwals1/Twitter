@@ -11,6 +11,7 @@ class Post(models.Model):
         User, on_delete=models.CASCADE, blank=True, null=True)
     post_text = models.CharField(max_length=240)
     date_posted = models.DateTimeField(auto_now_add=True)
+    number_of_likes = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.post_text} by {self.user_post}"

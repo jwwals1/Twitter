@@ -14,7 +14,7 @@
         {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br> 
         <form action="{% url 'add_like' post_id=post.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="submit" value="Like">{{ alllikes.count }}<br><br>
+        <input type="submit" value="Like"> {{ post.number_of_likes }}<br><br>
         </form>
         {% endfor %}
     </div>

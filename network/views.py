@@ -9,7 +9,6 @@ from .models import User, Post, Profile, Follow, Like
 
 def index(request):
     posts = Post.objects.all().order_by("-date_posted")
-    post = Post.objects.all()
     form = NewPostForm(request.POST)
     alllikes = Like.objects.all()
 
@@ -26,7 +25,7 @@ def index(request):
     return render(request, "network/index.html", {
         "post_form": NewPostForm(),
         "posts": posts,
-        "alllikes": alllikes
+        "alllikes": alllikes,
     })
 
 
@@ -136,5 +135,17 @@ def add_like(request, post_id):
     post = Post.objects.get(id=post_id)
     user = User.objects.get(pk=request.user.id)
     newlike = Like(user=user, post=post)
+    post.number_of_likes = post.number_of_likes + 1
     newlike.save()
+    post.save()
     return HttpResponseRedirect(reverse(index))
+
+
+def add_like_user_page(request, post_id):
+    post = Post.objects.get(id=post_id)
+    user = User.objects.get(pk=request.user.id)
+    newlike = Like(user=user, post=post)
+    post.number_of_likes = post.number_of_likes + 1
+    newlike.save()
+    post.save()
+    return HttpResponseRedirect(reverse(user_profile))
