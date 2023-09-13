@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from .forms import NewPostForm
 from .models import User, Post, Profile, Follow, Like
@@ -150,20 +150,20 @@ def add_like(request, post_id):
         return HttpResponseRedirect(reverse(index))
 
 
-def add_like_user_page(request, post_id):
-    post = Post.objects.get(id=post_id)
-    user = User.objects.get(pk=request.user.id)
-    like_value = Like.objects.filter(post_id=post_id, user=user).first()
-    username = request.user
+# def add_like_user_page(request, post_id, user_id):
+#     post = Post.objects.get(id=post_id)
+#     user_id = User.objects.get(pk=request.user.id)
+#     like_value = Like.objects.filter(post_id=post_id, user=user_id).first()
+#     username = request.user
 
-    if like_value == None:
-        newlike = Like(user=username, post=post)
-        post.number_of_likes = post.number_of_likes + 1
-        newlike.save()
-        post.save()
-        return HttpResponseRedirect(reverse(user_profile))
-    else:
-        like_value.delete()
-        post.number_of_likes = post.number_of_likes - 1
-        post.save()
-        return HttpResponseRedirect(reverse(user_profile))
+#     if like_value == None:
+#         newlike = Like(user=username, post=post)
+#         post.number_of_likes = post.number_of_likes + 1
+#         newlike.save()
+#         post.save()
+#         return HttpResponseRedirect(reverse('/user_profile/'+user_id))
+#     else:
+#         like_value.delete()
+#         post.number_of_likes = post.number_of_likes - 1
+#         post.save()
+#         return render('network/user_profile.html')
