@@ -171,9 +171,28 @@ def add_like(request, post_id):
 
 def follow(request, user_id):
     if request.method == "POST":
-        user_to_follow = User.objects.get(pk=user_id)
-        follow_user = Follow(users_following=request.user,
-                             user_followers=user_to_follow)
-        follow_user.save()
+        users_following = request.user
+        user_followers = User.objects.get(pk=user_id)
 
-        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+        if Follow.objects.filter(users_following=users_following, user_followers=user_followers).first():
+            delete_follow = Follow.objects.get(
+                users_following=users_following, user_followers=user_followers)
+            delete_follow.delete()
+            return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+        else:
+            add_follow = Follow.objects.create(
+                users_following=users_following, user_followers=user_followers)
+            add_follow.save()
+            return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+
+        # follow_value = Follow.objects.get(
+        #     users_following=request.user.id, user_followers=user_id)
+        # if follow_value == None:
+        #     user_to_follow = User.objects.get(pk=user_id)
+        #     follow_user = Follow(users_following=request.user.id,
+        #                         user_followers=user_to_follow)
+        #     follow_user.save()
+        #     return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+        # else:
+        #     follow_value.delete()
+        #     return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
