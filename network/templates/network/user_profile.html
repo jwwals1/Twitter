@@ -6,6 +6,12 @@
             <a class="nav-link" href="#"><strong>Hello, {{ user.username }}</strong></a>
     {% endif %}
     <div>
+        <form action="{% url 'follow' user_id=user_information.id %}" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="submit" value="Follow">
+        </form>
+    </div>
+    <div><br>  
         <img src="{{ user_information.profile.profile_picture.url }}" width="100", alt="Picture"> <br><br>
         {{ user_information }} <br><br>
         {{ user_information.profile.twitter_name }} <br><br>
@@ -13,9 +19,9 @@
         {{ user_information.profile.location }} <br><br>
         Joined: {{ user_information.profile.date_created }}<br><br>
 
-        <a href="{% url 'following'  user_id=user.id %}">Following:</a>
+        <a href="{% url 'following' user_id=user.id %}">Following:</a>
         {{ number_of_following.count }}<br><br>
-        <a href="{% url 'follower' user_id=user.id %}">Followers</a>
+        <a href="{% url 'follower' user_id=user.id %}">Followers:</a>
         {{ number_of_followers.count }}
     </div>
     <div>

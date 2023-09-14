@@ -93,7 +93,7 @@ def new_post(request):
 def user_profile(request, user_id):
     user_information = User.objects.get(pk=user_id)
     posts = Post.objects.filter(
-        user_post=request.user.id).order_by("-date_posted").all()
+        user_post=user_information).order_by("-date_posted").all()
 
     number_of_following = Follow.objects.filter(
         users_following=user_information)
@@ -161,9 +161,19 @@ def add_like(request, post_id):
 #         post.number_of_likes = post.number_of_likes + 1
 #         newlike.save()
 #         post.save()
-#         return HttpResponseRedirect(reverse('/user_profile/'+user_id))
+#         return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
 #     else:
 #         like_value.delete()
 #         post.number_of_likes = post.number_of_likes - 1
 #         post.save()
-#         return render('network/user_profile.html')
+#         return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+
+
+def follow(request, user_id):
+    if request.method == "POST":
+        user_to_follow = User.objects.get(pk=user_id)
+        follow_user = Follow(users_following=request.user,
+                             user_followers=user_to_follow)
+        follow_user.save()
+
+        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))

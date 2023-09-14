@@ -100,3 +100,29 @@ def likes(request, post_id):
     return render(request, "network/likes.html", {
         "list_of_likes": list_of_likes
     })
+
+    posts = Post.objects.all().order_by("-date_posted")
+    form = NewPostForm(request.POST)
+    alllikes = Like.objects.all()
+    username = request.user.username
+    post_id = request.GET.get('post')
+    post = Post.objects.filter(id=post_id)
+    like_filter = Like.objects.filter(
+        post_id=post_id, username=username).first()
+
+    if like_filter == None:
+        new_like = Like.objects.create(post_id=post_id, username=username)
+        new_like.save()
+        post.number_likes = post.number_if_likes+1
+        post.save()
+        return render(request, "network/index.html")
+    else:
+        like_filter.delete()
+        post.number_of_likes = post.number_of_likes-1
+        post.save()
+        return render(request, "network/index.html")
+
+
+        <a href="/user_profile/{{post.user_post.id}}">{{ post.user_post }}</a><br> 
+        posts = Post.objects.filter(
+            user_post=user_information).order_by("-date_posted").all()
