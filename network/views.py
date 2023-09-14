@@ -185,14 +185,9 @@ def follow(request, user_id):
             add_follow.save()
             return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
 
-        # follow_value = Follow.objects.get(
-        #     users_following=request.user.id, user_followers=user_id)
-        # if follow_value == None:
-        #     user_to_follow = User.objects.get(pk=user_id)
-        #     follow_user = Follow(users_following=request.user.id,
-        #                         user_followers=user_to_follow)
-        #     follow_user.save()
-        #     return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
-        # else:
-        #     follow_value.delete()
-        #     return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+
+def like_page(request, post_id):
+    list_of_likes = Like.objects.filter(post=post_id)
+    return render(request, 'network/likepage.html', {
+        'list_of_likes': list_of_likes
+    })

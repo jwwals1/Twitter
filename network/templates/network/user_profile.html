@@ -4,7 +4,7 @@
         <h1>User Profile</h1>
         {% if user.is_authenticated %}
             <a class="nav-link" href="#"><strong>Hello, {{ user.username }}</strong></a>
-    {% endif %}
+    {% endif %} 
     <div>
         <form action="{% url 'follow' user_id=user_information.id %}" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
@@ -19,9 +19,9 @@
         {{ user_information.profile.location }} <br><br>
         Joined: {{ user_information.profile.date_created }}<br><br>
 
-        <a href="{% url 'following' user_id=user.id %}">Following:</a>
+        <a href="{% url 'following' user_id=user_information.id %}">Following:</a>
         {{ number_of_following.count }}<br><br>
-        <a href="{% url 'follower' user_id=user.id %}">Followers:</a>
+        <a href="{% url 'follower' user_id=user_information.id %}">Followers:</a>
         {{ number_of_followers.count }}
     </div>
     <div>
@@ -30,7 +30,7 @@
         {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br>
         <form action="{% url 'add_like' post_id=post.id %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            <input type="submit" value="Like"> {{ post.number_of_likes }}<br><br>
+            <input type="submit" value="Like"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
         </form>
         {% endfor %}
     </center> 

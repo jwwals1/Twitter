@@ -1,0 +1,10 @@
+{% extends "network/layout.html" %}
+{% block body %}
+<div>
+    <h1>Liked</h1>
+    {% for list_of_like in list_of_likes %}
+    {{ list_of_like.user }}<br>
+    {% endfor %}
+</div>
+{% endblock %}
+
