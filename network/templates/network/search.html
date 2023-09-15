@@ -1,0 +1,12 @@
+{% extends "network/layout.html" %}
+{% block body%}
+{% if searched %}
+    <h1>Search for {{ searched }}</h1>
+    <br>
+    {% for user in users %}
+    <a href="{% url 'user_profile' user_id=user.id %}">{{ user }}<br></a>
+    {% endfor %}
+{% else %}
+    <h1>Need to search for a user</h1> 
+{% endif %}
+{% endblock %}

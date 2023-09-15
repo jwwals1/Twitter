@@ -19,5 +19,6 @@ urlpatterns = [
     path("add_like_user_page/<int:user_id>/<int:post_id>/",
          views.add_like_user_page, name="add_like_user_page"),
     path("add_like_user_page/<int:post_id>/",
-         views.add_like_user_page, name="add_like_user_page")
+         views.add_like_user_page, name="add_like_user_page"),
+    path("search", views.search, name="search")
 ]

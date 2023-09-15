@@ -20,4 +20,12 @@
         {% endfor %}
     </div>
 </center>
+
+<div>   
+    <form action="{% url 'search' %}" method="POST">
+        {% csrf_token %}
+        <input type="search" placeholder="Search for user..." name="searched">
+        <button type="submit">Search</button>
+    </form>
+</div>
 {% endblock %}

@@ -5,6 +5,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from .forms import NewPostForm
 from .models import User, Post, Profile, Follow, Like
+from itertools import chain
 
 
 def index(request):
@@ -100,13 +101,6 @@ def user_profile(request, user_id):
     number_of_followers = Follow.objects.filter(
         user_followers=user_information)
 
-    # if request.method == "POST":
-    #     post = Post.objects.get(pk=post_id)
-    #     user = User.objects.get(pk=request.user.id)
-    #     newlike = Like(user=user, post=post)
-    #     newlike.save()
-    #     return HttpResponseRedirect(reverse(user_profile))
-
     return render(request, 'network/user_profile.html', {
         "user_information": user_information,
         "posts": posts,
@@ -191,3 +185,16 @@ def like_page(request, post_id):
     return render(request, 'network/likepage.html', {
         'list_of_likes': list_of_likes
     })
+
+
+def search(request):
+    if request.method == "POST":
+        searched = request.POST['searched']
+        users = User.objects.filter(username__contains=searched)
+
+        return render(request, "network/search.html",
+                      {'searched': searched,
+                       'users': users})
+
+    else:
+        return render(request, "network/search.html", {})
