@@ -175,12 +175,12 @@ def add_like_following_page(request, post_id, user_id):
         post.number_of_likes = post.number_of_likes + 1
         newlike.save()
         post.save()
-        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+        return HttpResponseRedirect(reverse(following_post))
     else:
         like_value.delete()
         post.number_of_likes = post.number_of_likes - 1
         post.save()
-        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+        return HttpResponseRedirect(reverse(following_post))
 
 
 def follow(request, user_id):

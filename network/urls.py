@@ -24,4 +24,6 @@ urlpatterns = [
     path("followingpost", views.following_post, name="followingpost"),
     path("add_like_following_page/<int:post_id>/",
          views.add_like_following_page, name="add_like_following_page"),
+    path("add_like_following_page/<int:user_id>/<int:post_id>/",
+         views.add_like_following_page, name="add_like_following_page"),
 ]
