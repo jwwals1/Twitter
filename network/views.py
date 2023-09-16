@@ -6,6 +6,7 @@ from django.urls import reverse
 from .forms import NewPostForm
 from .models import User, Post, Profile, Follow, Like
 from itertools import chain
+from django.core.paginator import Paginator
 
 
 def index(request):
@@ -163,6 +164,25 @@ def add_like_user_page(request, post_id, user_id):
         return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
 
 
+def add_like_following_page(request, post_id, user_id):
+    post = Post.objects.get(id=post_id)
+    user = User.objects.get(pk=request.user.id)
+    like_value = Like.objects.filter(post_id=post_id, user=user).first()
+    username = request.user
+
+    if like_value == None:
+        newlike = Like(user=username, post=post)
+        post.number_of_likes = post.number_of_likes + 1
+        newlike.save()
+        post.save()
+        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+    else:
+        like_value.delete()
+        post.number_of_likes = post.number_of_likes - 1
+        post.save()
+        return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
+
+
 def follow(request, user_id):
     if request.method == "POST":
         users_following = request.user
@@ -198,3 +218,24 @@ def search(request):
 
     else:
         return render(request, "network/search.html", {})
+
+
+def following_post(request):
+    current_user = User.objects.get(pk=request.user.id)
+    following_accounts = Follow.objects.filter(users_following=current_user)
+    all_post = Post.objects.all().order_by('id').reverse()
+
+    following_posts = []
+
+    for post in all_post:
+        for account in following_accounts:
+            if account.user_followers == post.user_post:
+                following_posts.append(post)
+
+    paginator = Paginator(following_posts, 10)
+    page_number = request.GET.get('page')
+    posts_on_page = paginator.get_page(page_number)
+
+    return render(request, "network/followingpost.html", {
+        'posts_on_page': posts_on_page
+    })

@@ -8,6 +8,11 @@
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
     </head>
     <body>
+        <form action="{% url 'search' %}" method="POST" class="search">
+            {% csrf_token %}
+            <input type="search" placeholder="Search for user..." name="searched" class="searchbar">
+            <button type="submit" class="searchbutton">Search</button>
+        </form>
 
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <a class="navbar-brand" href="#">Network</a>
@@ -24,7 +29,7 @@
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Following</a>
+                        <a class="nav-link" href="{% url 'followingpost' %}">Following</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -43,7 +48,6 @@
               </ul>
             </div>
           </nav>
-        
         <div class="body">
             {% block body %}
             {% endblock %}

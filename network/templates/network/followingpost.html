@@ -1,0 +1,20 @@
+{% extends 'network/layout.html' %}
+
+{% block body %}
+
+
+<h1>Following</h1>
+<center>
+{% for post in posts_on_page%}
+<div class="post">
+<a href="/user_profile/{{post.user_post.id}}">@{{ post.user_post }}</a>
+<br> {{post.post_text}}<br>{{post.date_posted}}<br>
+<form action="{% url 'add_like_following_page' post_id=post.id %}" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="submit" value="Like" class="likebutton"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
+    </form>
+</div>
+{% endfor %}
+</center>
+
+{% endblock %}

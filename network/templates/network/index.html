@@ -6,26 +6,20 @@
     <h1>Make New Post</h1>
     <form action="{% url 'new_post' %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ post_form }}
-        <input type="submit" value="Post">
+        {{ post_form }}  <br>
+        <input type="submit" value="Post" class="postbutton">
     </form>
     <div>
         {% for post in posts %}
-        <a href="/user_profile/{{post.user_post.id}}">@{{ post.user_post }}</a><br> 
+        <div class="post">
+        <a href="/user_profile/{{post.user_post.id}}" >@{{ post.user_post }}</a><br> 
         {{ post.post_text }} <br>{{ post.date_posted }}<br> 
         <form action="{% url 'add_like' post_id=post.id %}" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="submit" value="Like"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
+        <input type="submit" value="Like" class="likebutton"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
         </form>
+        </div>
         {% endfor %}
     </div>
 </center>
-
-<div>   
-    <form action="{% url 'search' %}" method="POST">
-        {% csrf_token %}
-        <input type="search" placeholder="Search for user..." name="searched">
-        <button type="submit">Search</button>
-    </form>
-</div>
 {% endblock %}

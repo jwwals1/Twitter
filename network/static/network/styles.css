@@ -1,0 +1,39 @@
+.post {
+    border: 2px solid gray;
+    margin: 10px 300px;
+    border-radius: 20px;
+}
+
+.search {
+    float: right;
+    margin: 15px;
+}
+
+.searchbar {
+    border-radius: 10px;
+}
+
+.searchbutton {
+    border-radius: 10px;
+}
+
+.profilepost {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+}
+
+.postbutton {
+    border-radius: 20px;
+    border-width: 2px;
+    background-color: rgb(173, 216, 250);
+    width: 60px;
+}
+
+.likebutton {
+    border-radius: 20px;
+    width: 50px;
+    background-color: blue;
+    color: white;
+}
