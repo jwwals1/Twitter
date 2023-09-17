@@ -1,6 +1,7 @@
+import time
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from .forms import NewPostForm
@@ -24,10 +25,36 @@ def index(request):
             new_post.save()
         return render(request, "network/index.html")
 
+    paginator = Paginator(posts, 10)
+    page_number = request.GET.get('page')
+    posts_on_page = paginator.get_page(page_number)
+
     return render(request, "network/index.html", {
         "post_form": NewPostForm(),
         "posts": posts,
         "alllikes": alllikes,
+        "posts_on_page": posts_on_page
+    })
+
+
+def following_post(request):
+    current_user = User.objects.get(pk=request.user.id)
+    following_accounts = Follow.objects.filter(users_following=current_user)
+    all_post = Post.objects.all().order_by('id').reverse()
+
+    following_posts = []
+
+    for post in all_post:
+        for account in following_accounts:
+            if account.user_followers == post.user_post:
+                following_posts.append(post)
+
+    paginator = Paginator(following_posts, 10)
+    page_number = request.GET.get('page')
+    posts_on_page = paginator.get_page(page_number)
+
+    return render(request, "network/followingpost.html", {
+        'posts_on_page': posts_on_page
     })
 
 
@@ -218,24 +245,3 @@ def search(request):
 
     else:
         return render(request, "network/search.html", {})
-
-
-def following_post(request):
-    current_user = User.objects.get(pk=request.user.id)
-    following_accounts = Follow.objects.filter(users_following=current_user)
-    all_post = Post.objects.all().order_by('id').reverse()
-
-    following_posts = []
-
-    for post in all_post:
-        for account in following_accounts:
-            if account.user_followers == post.user_post:
-                following_posts.append(post)
-
-    paginator = Paginator(following_posts, 10)
-    page_number = request.GET.get('page')
-    posts_on_page = paginator.get_page(page_number)
-
-    return render(request, "network/followingpost.html", {
-        'posts_on_page': posts_on_page
-    })
