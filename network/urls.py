@@ -22,8 +22,13 @@ urlpatterns = [
          views.add_like_user_page, name="add_like_user_page"),
     path("search", views.search, name="search"),
     path("followingpost", views.following_post, name="followingpost"),
+    path("followingpost/<int:post_id>",
+         views.following_post, name="followingpost"),
     path("add_like_following_page/<int:post_id>/",
          views.add_like_following_page, name="add_like_following_page"),
     path("add_like_following_page/<int:user_id>/<int:post_id>/",
          views.add_like_following_page, name="add_like_following_page"),
+    path("profiledata/", views.ProfilesData.as_view()),
+    path("profiledata/<id>/", views.ProfileData.as_view()),
+    path('postsdata/', views.PostsData.as_view())
 ]

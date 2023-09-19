@@ -7,8 +7,14 @@
     {% endif %} 
     <div>
         <form action="{% url 'follow' user_id=user_information.id %}" method="POST" enctype="multipart/form-data">
+            {% if follow_value %}
             {% csrf_token %}
-            <input type="submit" value="Follow">
+            <input type="submit" value="Unfollow" class="unfollowbutton">
+            {% else %}
+            {% csrf_token %}
+            <input type="submit" value="Follow" class="followbutton">
+            {% endif %}
+
         </form>
     </div>
     <div><br>  
@@ -30,8 +36,13 @@
         <div class='post'>
         {{ post.post_text }} <br>{{ post.user_post }} {{ post.date_posted }}<br>
         <form action="{% url 'add_like_user_page' post_id=post.id user_id=user_information.id %}" method="post" enctype="multipart/form-data">
+            {% if like_value == None %}
             {% csrf_token %}
             <input type="submit" value="Like" class="likebutton"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
+            {% else %}
+            {% csrf_token %}
+            <input type="submit" value="Liked" class="likebutton"> <a href="{% url 'likepage' post_id=post.id %}">{{ post.number_of_likes }}</a><br><br>
+            {% endif %}
         </form>
         </div>
         {% endfor %}

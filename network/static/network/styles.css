@@ -35,3 +35,18 @@
     background-color: blue;
     color: white;
 }
+
+.followbutton {
+    border-radius: 20px;
+    width: 65px;
+    background-color: blue;
+    color: white;
+
+}
+
+.unfollowbutton {
+    border-radius: 20px;
+    width: 80px;
+    background-color: gray;
+    color: white;
+}

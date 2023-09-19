@@ -8,6 +8,10 @@ from .forms import NewPostForm
 from .models import User, Post, Profile, Follow, Like
 from itertools import chain
 from django.core.paginator import Paginator
+from rest_framework.decorators import api_view, APIView
+from rest_framework.response import Response
+from rest_framework import status
+from .serializer import PostSerializer, ProfileSerializer
 
 
 def index(request):
@@ -33,7 +37,7 @@ def index(request):
         "post_form": NewPostForm(),
         "posts": posts,
         "alllikes": alllikes,
-        "posts_on_page": posts_on_page
+        "posts_on_page": posts_on_page,
     })
 
 
@@ -41,7 +45,6 @@ def following_post(request):
     current_user = User.objects.get(pk=request.user.id)
     following_accounts = Follow.objects.filter(users_following=current_user)
     all_post = Post.objects.all().order_by('id').reverse()
-
     following_posts = []
 
     for post in all_post:
@@ -54,7 +57,31 @@ def following_post(request):
     posts_on_page = paginator.get_page(page_number)
 
     return render(request, "network/followingpost.html", {
-        'posts_on_page': posts_on_page
+        'posts_on_page': posts_on_page,
+    })
+
+
+def user_profile(request, user_id):
+    user_information = User.objects.get(pk=user_id)
+    posts = Post.objects.filter(
+        user_post=user_information).order_by("-date_posted").all()
+
+    users_following = request.user
+    user_followers = User.objects.get(pk=user_id)
+    follow_value = Follow.objects.filter(
+        users_following=users_following, user_followers=user_followers)
+
+    number_of_following = Follow.objects.filter(
+        users_following=user_information)
+    number_of_followers = Follow.objects.filter(
+        user_followers=user_information)
+
+    return render(request, 'network/user_profile.html', {
+        "user_information": user_information,
+        "posts": posts,
+        "number_of_following": number_of_following,
+        "number_of_followers": number_of_followers,
+        'follow_value': follow_value
     })
 
 
@@ -119,24 +146,6 @@ def new_post(request):
         return HttpResponseRedirect(reverse(index))
 
 
-def user_profile(request, user_id):
-    user_information = User.objects.get(pk=user_id)
-    posts = Post.objects.filter(
-        user_post=user_information).order_by("-date_posted").all()
-
-    number_of_following = Follow.objects.filter(
-        users_following=user_information)
-    number_of_followers = Follow.objects.filter(
-        user_followers=user_information)
-
-    return render(request, 'network/user_profile.html', {
-        "user_information": user_information,
-        "posts": posts,
-        "number_of_following": number_of_following,
-        "number_of_followers": number_of_followers,
-    })
-
-
 def following(request, user_id):
     list_of_followings = Follow.objects.filter(users_following=user_id)
 
@@ -150,6 +159,13 @@ def follower(request, user_id):
 
     return render(request, "network/follower.html", {
         'list_of_followers': list_of_followers
+    })
+
+
+def like_page(request, post_id):
+    list_of_likes = Like.objects.filter(post=post_id)
+    return render(request, 'network/likepage.html', {
+        'list_of_likes': list_of_likes
     })
 
 
@@ -196,16 +212,19 @@ def add_like_following_page(request, post_id, user_id):
     user = User.objects.get(pk=request.user.id)
     like_value = Like.objects.filter(post_id=post_id, user=user).first()
     username = request.user
+    liked = False
 
     if like_value == None:
         newlike = Like(user=username, post=post)
         post.number_of_likes = post.number_of_likes + 1
+        liked = True
         newlike.save()
         post.save()
         return HttpResponseRedirect(reverse(following_post))
     else:
         like_value.delete()
         post.number_of_likes = post.number_of_likes - 1
+        liked = False
         post.save()
         return HttpResponseRedirect(reverse(following_post))
 
@@ -227,13 +246,6 @@ def follow(request, user_id):
             return HttpResponseRedirect(reverse("user_profile", args=[user_id]))
 
 
-def like_page(request, post_id):
-    list_of_likes = Like.objects.filter(post=post_id)
-    return render(request, 'network/likepage.html', {
-        'list_of_likes': list_of_likes
-    })
-
-
 def search(request):
     if request.method == "POST":
         searched = request.POST['searched']
@@ -245,3 +257,45 @@ def search(request):
 
     else:
         return render(request, "network/search.html", {})
+
+
+class ProfilesData(APIView):
+    def get(self, request):
+        queryset = Profile.objects.all()
+        serializer = ProfileSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = ProfileSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class ProfileData(APIView):
+    def get(self, request, id):
+        profile = get_object_or_404(Profile, pk=id)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
+
+    def post(self, request, id):
+        profile = get_object_or_404(Profile, pk=id)
+        serializer = Profile(
+            profile, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class PostsData(APIView):
+    def get(self, request):
+        queryset = Post.objects.all()
+        seriailizer = PostSerializer(queryset, many=True)
+        return Response(seriailizer.data)
+
+    def post(self, request):
+        posts = get_object_or_404(Post, pk=id)
+        serializer = Profile(posts, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
